@@ -1,12 +1,30 @@
 import argparse
-from typing import Dict
+from warnings import warn
 
-from attractors import Attractor, Attractors
+import numpy as np
+import pandas as pd
+
+from attractors import Attractors, trajectory_steps_2d, trajectory_steps_3d
+from plot import plot_2d_attractor
 
 
-def main(args: argparse.Namespace, optional_params: Dict[str, float]) -> None:
-    attractor = Attractor.load(args.name, args.N, args.x_0, optional_params)
-    print(attractor.step((0, 0)))
+def main(attractor, args: argparse.Namespace) -> None:
+    assert args.attractor in [a.value.name for a in Attractors]
+    # Generate the trajectory
+    if attractor.N == 2:
+        x = trajectory_steps_2d(
+            attractor.step,
+            args.x_0,
+            int(args.N_steps),
+            float(args.a),
+            float(args.b),
+            float(args.c),
+            float(args.d),
+            float(args.e),
+            float(args.f),
+        )
+        df = pd.DataFrame(dict(x=x[:, 0], y=x[:, 1]))
+        plot_2d_attractor(df)
 
 
 if __name__ == "__main__":
@@ -14,23 +32,42 @@ if __name__ == "__main__":
         description="Visualise strange attractors. Optional parameters can be provided, ex: --a 1.2"
     )
     parser.add_argument(
-        "name",
+        "attractor",
         help="Name of the strange attractor",
-        choices=[a.value for a in Attractors],
+        choices=[a.value.name for a in Attractors],
         type=str,
     )
+    parser.add_argument("--N_steps", type=int, default=10000000)
+    parser.add_argument("--a", default=None)
+    parser.add_argument("--b", default=None)
+    parser.add_argument("--c", default=None)
+    parser.add_argument("--d", default=None)
+    parser.add_argument("--e", default=None)
+    parser.add_argument("--f", default=None)
     parser.add_argument(
-        "x_0",
-        type=float,
-        nargs="+",
-        help="Starting point for the simulation, space separated. Ex: 0 1.2",
+        "--x_0",
+        # type=Optional[str],
+        help="Starting point for the simulation, space separated. Ex: '(0,1.2)'. Default (0,0)",
+        default=None,
     )
-    parser.add_argument("--N", type=int, default=1000)
 
-    args, rest = parser.parse_known_args()
-    args.x_0 = tuple(args.x_0)
-    optional_params = {
-        rest[i].replace("--", ""): float(rest[i + 1]) for i in range(0, len(rest), 2)
-    }
+    args = parser.parse_args()
+    attractor = None
+    for att in Attractors:
+        if att.value.name == args.attractor:
+            attractor = att.value
+            break
+    args.x_0 = (
+        np.array(eval(args.x_0)) if args.x_0 is not None else np.zeros(attractor.N)
+    )
+    assert args.x_0.shape == (attractor.N,)
+    if any([(getattr(args, idf) is None) for idf in attractor.default_params.keys()]):
+        warn(
+            f"Missing step param {list(attractor.default_params.keys())}, fallback to default: {attractor.default_params}"
+        )
+    # Set to float
+    for idf in ["a", "b", "c", "d", "e", "f"]:
+        if getattr(args, idf) is None:
+            setattr(args, idf, 0.0)
 
-    main(args, optional_params)
+    main(attractor, args)
