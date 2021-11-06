@@ -22,13 +22,13 @@ def generate_filename(args: Namespace) -> str:
 
 def save_params(filename: str, args: Namespace) -> None:
     save_dict = vars(args)
-    save_dict["x_0"] = list(save_dict["x_0"])
+    save_dict["x_0"] = list(save_dict["x_0"].astype(float))
     with open(f"{filename}.json", "wt") as f:
         json.dump(save_dict, f, indent=4)
 
 
 def save_img(filename: str, img) -> None:
-    export_image(img, f"{filename}", fmt=".png")
+    export_image(img, f"{filename}", background="white", fmt=".png")
 
 
 def plot_2d_attractor(df: pd.DataFrame, args: Namespace) -> None:
@@ -44,7 +44,9 @@ def plot_2d_attractor(df: pd.DataFrame, args: Namespace) -> None:
 def plot_3d_attractor(x: np.array, args: Namespace) -> None:
     fig = plt.figure(figsize=(5, 5))
     ax = fig.gca(projection="3d")
-
+    plt.axis("off")
+    plt.grid(b=None)
+    
     plt.plot(x[:, 0], x[:, 1], x[:, 2], ".", color="black", alpha=0.2, markersize=0.2)
 
     filename = generate_filename(args)
