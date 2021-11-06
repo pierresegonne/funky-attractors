@@ -46,7 +46,7 @@ def plot_3d_attractor(x: np.array, args: Namespace) -> None:
     ax = fig.gca(projection="3d")
     plt.axis("off")
     plt.grid(b=None)
-    
+
     plt.plot(x[:, 0], x[:, 1], x[:, 2], ".", color="black", alpha=0.2, markersize=0.2)
 
     filename = generate_filename(args)
