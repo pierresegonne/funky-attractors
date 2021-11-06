@@ -5,26 +5,28 @@ import numpy as np
 import pandas as pd
 
 from attractors import Attractors, trajectory_steps
-from plot import plot_2d_attractor
+from plot import plot_2d_attractor, plot_3d_attractor
 
 
 def main(attractor, args: argparse.Namespace) -> None:
     assert args.attractor in [a.value.name for a in Attractors]
     # Generate the trajectory
+    x = trajectory_steps(
+        attractor.step,
+        args.x_0,
+        int(args.N_steps),
+        float(args.a),
+        float(args.b),
+        float(args.c),
+        float(args.d),
+        float(args.e),
+        float(args.f),
+    )
     if attractor.N == 2:
-        x = trajectory_steps(
-            attractor.step,
-            args.x_0,
-            int(args.N_steps),
-            float(args.a),
-            float(args.b),
-            float(args.c),
-            float(args.d),
-            float(args.e),
-            float(args.f),
-        )
         df = pd.DataFrame(dict(x=x[:, 0], y=x[:, 1]))
         plot_2d_attractor(df, args)
+    elif attractor.N == 3:
+        plot_3d_attractor(x, args)
 
 
 if __name__ == "__main__":
