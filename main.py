@@ -4,7 +4,7 @@ from warnings import warn
 import numpy as np
 import pandas as pd
 
-from attractors import Attractors, trajectory_steps_2d, trajectory_steps_3d
+from attractors import Attractors, trajectory_steps
 from plot import plot_2d_attractor
 
 
@@ -12,7 +12,7 @@ def main(attractor, args: argparse.Namespace) -> None:
     assert args.attractor in [a.value.name for a in Attractors]
     # Generate the trajectory
     if attractor.N == 2:
-        x = trajectory_steps_2d(
+        x = trajectory_steps(
             attractor.step,
             args.x_0,
             int(args.N_steps),

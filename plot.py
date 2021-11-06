@@ -4,11 +4,11 @@ from argparse import Namespace
 from pathlib import Path
 
 import datashader as ds
-from numpy import save
-from numpy.core.fromnumeric import searchsorted
 import pandas as pd
 from datashader import transfer_functions as tf
 from datashader.utils import export_image
+from numpy import save
+from numpy.core.fromnumeric import searchsorted
 
 
 def save_img(img, args: Namespace) -> None:
