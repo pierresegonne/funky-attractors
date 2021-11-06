@@ -144,4 +144,5 @@ cython_debug/
 *.pdf
 .vscode
 *.png
+!examples/*.png
 plots/*/*.json
