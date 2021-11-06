@@ -24,7 +24,7 @@ def main(attractor, args: argparse.Namespace) -> None:
             float(args.f),
         )
         df = pd.DataFrame(dict(x=x[:, 0], y=x[:, 1]))
-        plot_2d_attractor(df)
+        plot_2d_attractor(df, args)
 
 
 if __name__ == "__main__":
@@ -65,6 +65,9 @@ if __name__ == "__main__":
         warn(
             f"Missing step param {list(attractor.default_params.keys())}, fallback to default: {attractor.default_params}"
         )
+        for idf in attractor.default_params.keys():
+            if getattr(args, idf) is None:
+                setattr(args, idf, attractor.default_params[idf])
     # Set to float
     for idf in ["a", "b", "c", "d", "e", "f"]:
         if getattr(args, idf) is None:

@@ -57,6 +57,27 @@ def clifford_step(
     )
 
 
+@jit(nopython=True)
+def de_jong_step(
+    x: float, y: float, a: float, b: float, c: float, d: float, *args
+) -> Tuple[float]:
+    return (
+        sin(a * y) - cos(b * x),
+        sin(c * x) - cos(d * y),
+    )
+
+
+@jit(nopython=True)
+def ikeda_step(
+    x: float, y: float, a: float, b: float, c: float, d: float, *args
+) -> Tuple[float]:
+    _tmp = (a - c) / (1 + (x ** 2) + (y ** 2))
+    return (
+        d + b * ((x * np.cos(_tmp)) - (y * np.sin(_tmp))),
+        b * ((x * np.sin(_tmp)) + (y * np.cos(_tmp))),
+    )
+
+
 @dataclass
 class Attractor:
     name: str
@@ -67,39 +88,14 @@ class Attractor:
 
 class Attractors(Enum):
     CLIFFORD = Attractor(
-        "clifford", clifford_step, 2, {"a": -1.3, "b": -1.3, "c": -1.8, "d": -1.9}
+        "clifford", clifford_step, 2, {"a": 1.5, "b": -1.8, "c": 1.6, "d": 2}
     )
     DE_JONG = Attractor(
-        "de_jong", lambda x: x, 2, {"a": -0.709, "b": 1.638, "c": 0.452, "d": 1.740}
+        "de_jong", de_jong_step, 2, {"a": -0.709, "b": 1.638, "c": 0.452, "d": 1.740}
     )
-    IKEDA = Attractor("ikeda", lambda x: x, 2, {"a": 0.4, "b": 0.9, "c": 6, "d": 1})
+    IKEDA = Attractor("ikeda", ikeda_step, 2, {"a": 0.4, "b": 0.9, "c": 6, "d": 1})
     LORENZ = Attractor("lorenz", lambda x: x, 3, {"a": 10, "b": 28, "c": 8 / 3})
     ROSSLER = Attractor("rossler", lambda x: x, 3, {"a": 0.1, "b": 0.1, "c": 14})
-
-
-# # 2D
-# def clifford_attractor(X, params=CLIFFORD_DEFAULT_PARAMS):
-#     _X = np.zeros_like(X)
-#     _X[0] = np.sin(params["a"] * X[1]) + params["c"] * np.cos(params["a"] * X[0])
-#     _X[1] = np.sin(params["b"] * X[0]) + params["d"] * np.cos(params["b"] * X[1])
-#     return _X
-
-
-# def de_jong_attractor(X, params=DE_JONG_DEFAULT_PARAMS):
-#     _X = np.zeros_like(X)
-#     _X[0] = np.sin(params["a"] * X[1]) - np.cos(para1.81ms["b"] * X[0])
-#     _X[1] = np.sin(params["c"] * X[0]) - np.cos(params["d"] * X[1])
-#     return _X
-
-
-# def ikeda_attractor(X, params=IKEDA_DEFAULT_PARAMS):
-#     _X = np.zeros_like(X)
-#     temp = (params["a"] - params["c"]) / (
-#         1 + (X[0] * X[0]) + (X[1] * X[1])
-#     )  # Parenthesis or not ?
-#     _X[0] = params["d"] + params["b"] * ((X[0] * np.cos(temp)) - (X[1] * np.sin(temp)))
-#     _X[1] = params["b"] * ((X[0] * np.sin(temp)) + (X[1] * np.cos(temp)))
-#     return _X
 
 
 # # Euler's method diverge?
