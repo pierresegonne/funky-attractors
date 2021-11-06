@@ -1,5 +1,5 @@
 For both Ikeda and DeJong:
-Clifford A. Pickover - The Pattern Book_ Fractals, Art, and Nature-World Scientific (1995).pdf
+Clifford A. Pickover - The Pattern Book: Fractals, Art, and Nature-World Scientific (1995).pdf
 
 Inspired by:
 https://vedransekara.github.io/2016/11/14/strange_attractors.html
